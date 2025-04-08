@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic Tac Toe AI</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: #f9f9f9;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    #controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    #game-container {
+      display: flex;
+      justify-content: center;
+    }
+    .board {
+      display: grid;
+      gap: 5px;
+    }
+    .cell {
+      width: 50px;
+      height: 50px;
+      font-size: 24px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #status {
+      margin-top: 15px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Tic Tac Toe with AI</h1>
+  <div id="controls">
+    <label for="board-size">Choose board size:</label>
+    <select id="board-size">
+      <option value="3">3x3</option>
+      <option value="6">6x6</option>
+      <option value="9">9x9</option>
+    </select>
+    <button onclick="startGame()">Start Game</button>
+  </div>
+
+  <div id="game-container"></div>
+  <div id="status"></div>
+
+  <script>
+    let board = [];
+    let boardSize = 3;
+
+    function startGame() {
+      boardSize = parseInt(document.getElementById('board-size').value);
+      board = Array(boardSize * boardSize).fill('');
+
+      const boardContainer = document.getElementById('game-container');
+      boardContainer.innerHTML = '';
+      const boardGrid = document.createElement('div');
+      boardGrid.className = 'board';
+      boardGrid.style.gridTemplateColumns = `repeat(${boardSize}, 50px)`;
+
+      board.forEach((_, index) => {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.dataset.index = index;
+        cell.addEventListener('click', onCellClick);
+        boardGrid.appendChild(cell);
+      });
+
+      boardContainer.appendChild(boardGrid);
+      document.getElementById('status').textContent = "Player's turn";
+    }
+
+    function onCellClick(event) {
+      const index = event.target.dataset.index;
+      if (board[index] === '') {
+        board[index] = 'X';
+        event.target.textContent = 'X';
+        document.getElementById('status').textContent = "AI's turn (coming soon)";
+        // TODO: Implement AI move
+      }
+    }
+  </script>
+</body>
+</html>
