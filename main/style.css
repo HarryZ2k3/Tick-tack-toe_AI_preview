@@ -1,0 +1,34 @@
+#board {
+    display: grid;
+    gap: 4px;
+    margin-top: 20px;
+    justify-content: center;
+  }
+  
+  /* Cells */
+  .cell {
+    width: 60px;
+    height: 60px;
+    background-color: #ffffff;
+    border: 2px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2em;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  /* Set grid columns dynamically */
+  #board[data-size="3"] {
+    grid-template-columns: repeat(3, 60px);
+  }
+  
+  #board[data-size="6"] {
+    grid-template-columns: repeat(6, 60px);
+  }
+  
+  #board[data-size="9"] {
+    grid-template-columns: repeat(9, 60px);
+  }
+  
