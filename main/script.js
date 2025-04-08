@@ -51,12 +51,11 @@ function handleCellClick(e) {
 
     handleMove(row, col);
 
-    if (!gameOver && boardSize === 3 && currentPlayer === 'O') {
-        const flatBoard = board.flat();
-        const aiMove = getBestMove(flatBoard);
-        const aiRow = Math.floor(aiMove / 3);
-        const aiCol = aiMove % 3;
-        setTimeout(() => handleMove(aiRow, aiCol), 200);
+    if (!gameOver && currentPlayer === 'O') {
+        const aiMove = getBestMove(boardSize === 3 ? board.flat() : board);
+        const row = boardSize === 3 ? Math.floor(aiMove / 3) : aiMove.row;
+        const col = boardSize === 3 ? aiMove % 3 : aiMove.col;
+        setTimeout(() => handleMove(row, col), 200);
     }
 }
 
