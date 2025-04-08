@@ -9,6 +9,7 @@ const sizeSelector = document.getElementById('board-size');
 
 function startGame() {
     boardSize = parseInt(sizeSelector.value);
+    boardContainer.style.display = 'grid';
     resetGame();
 }
 
@@ -31,6 +32,9 @@ function renderBoard() {
             cell.dataset.row = row;
             cell.dataset.col = col;
             cell.textContent = board[row][col];
+            if (board[row][col] === '') {
+                cell.classList.add('played');
+            }
             cell.addEventListener('click', handleCellClick);
             boardContainer.appendChild(cell);
         }
@@ -113,6 +117,3 @@ function checkWinCondition(row, col) {
 function setStatus(message) {
     statusDisplay.textContent = message;
 }
-
-// Auto-start with default board
-startGame();
