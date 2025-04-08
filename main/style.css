@@ -1,34 +1,82 @@
+/* General layout */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: #f7f7f7;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    text-align: center;
+}
+
+/* Controls */
+#controls {
+    margin: 20px 0;
+}
+
+select, button {
+    padding: 10px;
+    font-size: 16px;
+    margin-right: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+#status {
+    margin-top: 20px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Board layout */
 #board {
-    display: grid;
+    display: none; /* Hidden until Start Game is clicked */
     gap: 4px;
     margin-top: 20px;
     justify-content: center;
-  }
-  
-  /* Cells */
-  .cell {
-    width: 60px;
-    height: 60px;
+}
+
+/* Cells */
+.cell {
     background-color: #ffffff;
     border: 2px solid #ddd;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2em;
+    font-size: clamp(20px, 5vw, 48px);
     font-weight: bold;
     cursor: pointer;
-  }
-  
-  /* Set grid columns dynamically */
-  #board[data-size="3"] {
-    grid-template-columns: repeat(3, 60px);
-  }
-  
-  #board[data-size="6"] {
-    grid-template-columns: repeat(6, 60px);
-  }
-  
-  #board[data-size="9"] {
-    grid-template-columns: repeat(9, 60px);
-  }
-  
+    width: clamp(40px, 10vw, 80px);
+    height: clamp(40px, 10vw, 80px);
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.cell:hover {
+    background-color: #f0f0f0;
+}
+
+.cell.played {
+    animation: pop 0.2s ease-out;
+}
+
+@keyframes pop {
+    0% { transform: scale(0.8); opacity: 0.6; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Dynamic columns */
+#board[data-size="3"] {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+#board[data-size="6"] {
+    grid-template-columns: repeat(6, 1fr);
+}
+
+#board[data-size="9"] {
+    grid-template-columns: repeat(9, 1fr);
+}
