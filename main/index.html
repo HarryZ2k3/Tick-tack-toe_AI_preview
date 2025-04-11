@@ -17,8 +17,17 @@
       <option value="6">6x6</option>
       <option value="9">9x9</option>
     </select>
+  
+    <label for="ai-type">Choose AI:</label>
+    <select id="ai-type" onchange="updateAlgorithmDescription()">
+      <option value="minimax">Minimax Algorithm</option>
+      <option value="greedy">Greedy Strategy</option>
+    </select>
+  
     <button onclick="startGame()">Start Game</button>
     <button onclick="resetGame()">Reset Board</button>
+  
+    <p id="ai-description" style="margin-top:10px; font-style: italic;"></p>
   </div>
 
   <div id="board"></div>
