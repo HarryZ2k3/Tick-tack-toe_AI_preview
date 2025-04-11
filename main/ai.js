@@ -79,22 +79,49 @@ function getBestMove2D(board, size, depthLimit) {
     let bestScore = -Infinity;
     let bestMove = null;
 
+    // Find the most recent HUMAN_PLAYER move
+    let lastHumanMove = null;
+    for (let r = 0; r < size; r++) {
+        for (let c = 0; c < size; c++) {
+            if (board[r][c] === HUMAN_PLAYER) {
+                lastHumanMove = { row: r, col: c };
+            }
+        }
+    }
+
+    // Generate all possible moves
+    const moves = [];
     for (let row = 0; row < size; row++) {
         for (let col = 0; col < size; col++) {
             if (board[row][col] === '') {
-                board[row][col] = AI_PLAYER;
-                const score = minimax2D(board, size, 0, false, depthLimit);
-                board[row][col] = '';
-                if (score > bestScore) {
-                    bestScore = score;
-                    bestMove = { row, col };
-                }
+                moves.push({ row, col });
             }
+        }
+    }
+
+    // Sort moves by distance to lastHumanMove
+    if (lastHumanMove) {
+        moves.sort((a, b) => {
+            const distA = Math.abs(a.row - lastHumanMove.row) + Math.abs(a.col - lastHumanMove.col);
+            const distB = Math.abs(b.row - lastHumanMove.row) + Math.abs(b.col - lastHumanMove.col);
+            return distA - distB;
+        });
+    }
+
+    // Apply minimax on moves in sorted order
+    for (const move of moves) {
+        board[move.row][move.col] = AI_PLAYER;
+        const score = minimax2D(board, size, 0, false, depthLimit);
+        board[move.row][move.col] = '';
+        if (score > bestScore) {
+            bestScore = score;
+            bestMove = move;
         }
     }
 
     return bestMove;
 }
+
 
 function minimax2D(board, size, depth, isMaximizing, maxDepth) {
     const result = evaluateGame2D(board, size);
@@ -165,26 +192,98 @@ function getGreedyMove(board, size, aiSymbol = 'O') {
     const humanSymbol = aiSymbol === 'O' ? 'X' : 'O';
     const winStreak = size === 6 ? 4 : size === 9 ? 5 : 3;
 
-    // 1. Try to win immediately
+    if (!Array.isArray(board[0])) {
+        // 3x3 case (flat array)
+        let lastHuman = -1;
+        for (let i = 0; i < 9; i++) {
+            if (board[i] === humanSymbol) {
+                lastHuman = i;
+            }
+        }
+
+        // Win or block if possible
+        for (let i = 0; i < 9; i++) {
+            if (board[i] === '') {
+                board[i] = aiSymbol;
+                if (checkWinner1D(board) === aiSymbol) {
+                    board[i] = '';
+                    return i;
+                }
+                board[i] = humanSymbol;
+                if (checkWinner1D(board) === humanSymbol) {
+                    board[i] = '';
+                    return i;
+                }
+                board[i] = '';
+            }
+        }
+
+        // Prefer move near human
+        if (lastHuman !== -1) {
+            let bestDist = Infinity;
+            let bestMove = null;
+            for (let i = 0; i < 9; i++) {
+                if (board[i] === '') {
+                    const dist = Math.abs(i - lastHuman);
+                    if (dist < bestDist) {
+                        bestDist = dist;
+                        bestMove = i;
+                    }
+                }
+            }
+            return bestMove;
+        }
+
+        // Fallback
+        for (let i = 0; i < 9; i++) {
+            if (board[i] === '') return i;
+        }
+        return null;
+    }
+
+    // 2D case (6x6, 9x9)
+    let lastHumanMove = null;
+    for (let r = 0; r < size; r++) {
+        for (let c = 0; c < size; c++) {
+            if (board[r][c] === humanSymbol) {
+                lastHumanMove = { row: r, col: c };
+            }
+        }
+    }
+
+    // Try win/block first
     const winMove = findBestStreakMove(board, size, aiSymbol, winStreak);
     if (winMove) return winMove;
-
-    // 2. Block opponent from winning
     const blockMove = findBestStreakMove(board, size, humanSymbol, winStreak);
     if (blockMove) return blockMove;
 
-    // 3. Pick first empty cell (default fallback)
-    for (let row = 0; row < size; row++) {
-        for (let col = 0; col < size; col++) {
-            if (board[row][col] === '') {
-                return { row, col };
+    // Choose closest to last human move
+    if (lastHumanMove) {
+        let bestDist = Infinity;
+        let bestMove = null;
+        for (let r = 0; r < size; r++) {
+            for (let c = 0; c < size; c++) {
+                if (board[r][c] === '') {
+                    const dist = Math.abs(r - lastHumanMove.row) + Math.abs(c - lastHumanMove.col);
+                    if (dist < bestDist) {
+                        bestDist = dist;
+                        bestMove = { row: r, col: c };
+                    }
+                }
             }
+        }
+        return bestMove;
+    }
+
+    // Fallback
+    for (let r = 0; r < size; r++) {
+        for (let c = 0; c < size; c++) {
+            if (board[r][c] === '') return { row: r, col: c };
         }
     }
 
     return null;
 }
-
 function findBestStreakMove(board, size, symbol, winStreak) {
     for (let row = 0; row < size; row++) {
         for (let col = 0; col < size; col++) {
