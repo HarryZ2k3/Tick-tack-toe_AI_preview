@@ -2,18 +2,18 @@ let boardSize = 3;
 let board = [];
 let currentPlayer = 'X';
 let gameOver = false;
-let selectedAI = 'minimax';
 
 const boardContainer = document.getElementById('board');
 const statusDisplay = document.getElementById('status');
 const sizeSelector = document.getElementById('board-size');
 const aiSelector = document.getElementById('ai-type');
+const aiDisplay = document.getElementById('current-ai');
 
 function startGame() {
-    selectedAI = document.getElementById('ai-type').value;
     boardSize = parseInt(sizeSelector.value);
     boardContainer.style.display = 'grid';
     resetGame();
+    updateCurrentAI();
 }
 
 function resetGame() {
@@ -22,6 +22,7 @@ function resetGame() {
     gameOver = false;
     renderBoard();
     setStatus(`Player ${currentPlayer}'s turn`);
+    updateCurrentAI();
 }
 
 function renderBoard() {
@@ -45,7 +46,7 @@ function renderBoard() {
 }
 
 function handleCellClick(e) {
-    if (gameOver) return;
+    if (gameOver || currentPlayer !== 'X') return;
 
     const row = parseInt(e.target.dataset.row);
     const col = parseInt(e.target.dataset.col);
@@ -53,21 +54,6 @@ function handleCellClick(e) {
     if (board[row][col] !== '') return;
 
     handleMove(row, col);
-
-    if (!gameOver && currentPlayer === 'O') {
-        const inputBoard = boardSize === 3 ? board.flat() : board;
-        let aiMove;
-    
-        if (selectedAI === 'minimax') {
-            aiMove = getBestMove(inputBoard);
-        } else if (selectedAI === 'greedy') {
-            aiMove = getGreedyMove(inputBoard, boardSize);
-        }
-    
-        const row = boardSize === 3 ? Math.floor(aiMove / 3) : aiMove.row;
-        const col = boardSize === 3 ? aiMove % 3 : aiMove.col;
-        setTimeout(() => handleMove(row, col), 200);
-    }
 }
 
 function handleMove(row, col) {
@@ -79,12 +65,42 @@ function handleMove(row, col) {
     if (checkWinCondition(row, col)) {
         setStatus(`Player ${currentPlayer} wins!`);
         gameOver = true;
-    } else if (isDraw()) {
+        return;
+    }
+
+    if (isDraw()) {
         setStatus("It's a draw!");
         gameOver = true;
-    } else {
-        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-        setStatus(`Player ${currentPlayer}'s turn`);
+        return;
+    }
+
+    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+    setStatus(`Player ${currentPlayer}'s turn`);
+
+    if (!gameOver && currentPlayer === 'O') {
+        setTimeout(() => aiMove(), 200);
+    }
+}
+
+function aiMove() {
+    const selectedAI = aiSelector.value;
+    const inputBoard = boardSize === 3 ? board.flat() : board;
+    let aiMove = null;
+
+    if (selectedAI === 'minimax') {
+        aiMove = getBestMove(inputBoard);
+    } else if (selectedAI === 'greedy') {
+        aiMove = getGreedyMove(inputBoard, boardSize);
+    }
+
+    if (aiMove !== null) {
+        const row = boardSize === 3 ? Math.floor(aiMove / 3) : aiMove.row;
+        const col = boardSize === 3 ? aiMove % 3 : aiMove.col;
+        handleMove(row, col);
+    }
+    if (aiMove === null) {
+        console.log('[Greedy AI] No available moves.');
+        return;
     }
 }
 
@@ -129,17 +145,26 @@ function setStatus(message) {
 }
 
 function updateAlgorithmDescription() {
-    const aiType = document.getElementById('ai-type').value;
+    const aiType = aiSelector.value;
     const desc = document.getElementById('ai-description');
 
     if (aiType === 'minimax') {
-        desc.textContent = "Minimax evaluates every possible outcome to make the best move. Best for 3x3 and small-depth larger boards.";
+        desc.textContent = "Minimax explores all possible moves and outcomes recursively to choose the best path. Strong but slower.";
     } else if (aiType === 'greedy') {
-        desc.textContent = "Greedy AI quickly picks the move that looks best immediately without deep prediction. Fast but not perfect.";
+        desc.textContent = "Greedy strategy chooses the best-looking move immediately without future prediction. Fast but short-sighted.";
     }
 }
 
-//run once on page load 
+function updateCurrentAI() {
+    const aiType = aiSelector.value;
+    if (aiType === 'minimax') {
+        aiDisplay.textContent = "AI Mode: Minimax (Recursive Strategy)";
+    } else if (aiType === 'greedy') {
+        aiDisplay.textContent = "AI Mode: Greedy (Immediate Choice)";
+    }
+}
+
 window.onload = () => {
     updateAlgorithmDescription();
+    updateCurrentAI();
 };

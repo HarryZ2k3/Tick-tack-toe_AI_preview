@@ -19,7 +19,7 @@
     </select>
 
     <label for="ai-type">Choose AI Algorithm:</label>
-    <select id="ai-type" onchange="updateAlgorithmDescription()">
+    <select id="ai-type" onchange="updateAlgorithmDescription(); updateCurrentAI();">
       <option value="minimax">Minimax Algorithm</option>
       <option value="greedy">Greedy Strategy</option>
     </select>
@@ -32,6 +32,7 @@
 
   <div id="board"></div>
   <div id="status"></div>
+  <div id="current-ai"></div>
 
   <script src="ai.js"></script>
   <script src="script.js"></script>
