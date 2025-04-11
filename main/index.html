@@ -2,10 +2,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Tic-tac-toe challenge</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <h1>Tic Tac Toe with AI</h1>
@@ -17,17 +17,17 @@
       <option value="6">6x6</option>
       <option value="9">9x9</option>
     </select>
-  
-    <label for="ai-type">Choose AI:</label>
+
+    <label for="ai-type">Choose AI Algorithm:</label>
     <select id="ai-type" onchange="updateAlgorithmDescription()">
       <option value="minimax">Minimax Algorithm</option>
       <option value="greedy">Greedy Strategy</option>
     </select>
-  
+
     <button onclick="startGame()">Start Game</button>
     <button onclick="resetGame()">Reset Board</button>
-  
-    <p id="ai-description" style="margin-top:10px; font-style: italic;"></p>
+
+    <p id="ai-description" style="margin-top: 10px; font-style: italic;"></p>
   </div>
 
   <div id="board"></div>

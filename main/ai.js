@@ -1,5 +1,3 @@
-// ai.js
-
 const AI_PLAYER = 'O';
 const HUMAN_PLAYER = 'X';
 
@@ -8,7 +6,7 @@ const scores = {
     'O': 1,
     'draw': 0
 };
-
+//minimax Algorithm
 function getBestMove(board) {
     if (Array.isArray(board[0])) {
         // NxN board (2D)
@@ -161,4 +159,72 @@ function evaluateGame2D(board, size) {
 
     const isDraw = board.every(row => row.every(cell => cell !== ''));
     return isDraw ? 'draw' : null;
+}
+//Greedy Strategy 
+function getGreedyMove(board, size, aiSymbol = 'O') {
+    const humanSymbol = aiSymbol === 'O' ? 'X' : 'O';
+    const winStreak = size === 6 ? 4 : size === 9 ? 5 : 3;
+
+    // 1. Try to win immediately
+    const winMove = findBestStreakMove(board, size, aiSymbol, winStreak);
+    if (winMove) return winMove;
+
+    // 2. Block opponent from winning
+    const blockMove = findBestStreakMove(board, size, humanSymbol, winStreak);
+    if (blockMove) return blockMove;
+
+    // 3. Pick first empty cell (default fallback)
+    for (let row = 0; row < size; row++) {
+        for (let col = 0; col < size; col++) {
+            if (board[row][col] === '') {
+                return { row, col };
+            }
+        }
+    }
+
+    return null;
+}
+
+function findBestStreakMove(board, size, symbol, winStreak) {
+    for (let row = 0; row < size; row++) {
+        for (let col = 0; col < size; col++) {
+            if (board[row][col] === '') {
+                board[row][col] = symbol;
+                const isWin = checkTempWin(board, row, col, size, winStreak);
+                board[row][col] = '';
+                if (isWin) return { row, col };
+            }
+        }
+    }
+    return null;
+}
+
+function checkTempWin(board, row, col, size, winStreak) {
+    const symbol = board[row][col];
+    const directions = [
+        [0, 1], [1, 0], [1, 1], [1, -1]
+    ];
+
+    function count(dirRow, dirCol) {
+        let r = row + dirRow;
+        let c = col + dirCol;
+        let count = 0;
+        while (
+            r >= 0 && r < size &&
+            c >= 0 && c < size &&
+            board[r][c] === symbol
+        ) {
+            count++;
+            r += dirRow;
+            c += dirCol;
+        }
+        return count;
+    }
+
+    for (const [dr, dc] of directions) {
+        const total = 1 + count(dr, dc) + count(-dr, -dc);
+        if (total >= winStreak) return true;
+    }
+
+    return false;
 }
