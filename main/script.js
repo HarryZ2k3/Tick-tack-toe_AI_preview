@@ -91,6 +91,8 @@ function aiMove() {
         aiMove = getBestMove(inputBoard);
     } else if (selectedAI === 'greedy') {
         aiMove = getGreedyMove(inputBoard, boardSize);
+    } else if (selectedAI === 'random') {
+        aiMove = getRandomMove(inputBoard, boardSize);
     }
 
     if (aiMove !== null) {
@@ -152,6 +154,8 @@ function updateAlgorithmDescription() {
         desc.textContent = "Minimax explores all possible moves and outcomes recursively to choose the best path. Strong but slower.";
     } else if (aiType === 'greedy') {
         desc.textContent = "Greedy strategy chooses the best-looking move immediately without future prediction. Fast but short-sighted.";
+    } else if (aiType === 'random') {
+        desc.textContent = "Blindly make a move.";
     }
 }
 
@@ -161,6 +165,8 @@ function updateCurrentAI() {
         aiDisplay.textContent = "AI Mode: Minimax (Recursive Strategy)";
     } else if (aiType === 'greedy') {
         aiDisplay.textContent = "AI Mode: Greedy (Immediate Choice)";
+    } else if (aiType === 'random') {
+        aiDisplay.textContent = "AI Mode: Random (God knows where it will make the next move)";
     }
 }
 

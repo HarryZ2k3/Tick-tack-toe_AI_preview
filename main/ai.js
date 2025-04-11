@@ -327,3 +327,26 @@ function checkTempWin(board, row, col, size, winStreak) {
 
     return false;
 }
+
+function getRandomMove(board, size) {
+    if (!Array.isArray(board[0])) {
+        // 3x3 flat board
+        const empty = [];
+        for (let i = 0; i < 9; i++) {
+            if (board[i] === '') empty.push(i);
+        }
+        if (empty.length === 0) return null;
+        const randIndex = Math.floor(Math.random() * empty.length);
+        return empty[randIndex];
+    }
+
+    // 2D board (6x6 or 9x9)
+    const empty = [];
+    for (let row = 0; row < size; row++) {
+        for (let col = 0; col < size; col++) {
+            if (board[row][col] === '') empty.push({ row, col });
+        }
+    }
+    if (empty.length === 0) return null;
+    return empty[Math.floor(Math.random() * empty.length)];
+}
