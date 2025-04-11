@@ -1,2 +1,2 @@
-# DSA_TTT
-A simple tick tack toe project for a DSA course
+# Tick tack toe AI preview
+Play against a variety of AI in tick-tack-toe
