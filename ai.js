@@ -350,3 +350,112 @@ function getRandomMove(board, size) {
     if (empty.length === 0) return null;
     return empty[Math.floor(Math.random() * empty.length)];
 }
+//Heuristic Strategy
+function getHeuristicMove(board, size, aiSymbol = 'O') {
+    const humanSymbol = aiSymbol === 'O' ? 'X' : 'O';
+    const winStreak = size === 6 ? 4 : size === 9 ? 5 : 3;
+    let bestScore = -Infinity;
+    let bestMove = null;
+
+    if (!Array.isArray(board[0])) {
+        // 3x3 flat
+        for (let i = 0; i < 9; i++) {
+            if (board[i] === '') {
+                board[i] = aiSymbol;
+                let score = evaluateBoard1D(board, aiSymbol, humanSymbol);
+                board[i] = '';
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestMove = i;
+                }
+            }
+        }
+        return bestMove;
+    }
+
+    // 2D board
+    for (let row = 0; row < size; row++) {
+        for (let col = 0; col < size; col++) {
+            if (board[row][col] === '') {
+                board[row][col] = aiSymbol;
+                let score = evaluateBoard2D(board, size, aiSymbol, humanSymbol, winStreak);
+                board[row][col] = '';
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestMove = { row, col };
+                }
+            }
+        }
+    }
+
+    return bestMove;
+}
+function evaluateBoard1D(board, ai, human) {
+    const lines = [
+        [0,1,2], [3,4,5], [6,7,8],
+        [0,3,6], [1,4,7], [2,5,8],
+        [0,4,8], [2,4,6]
+    ];
+
+    let score = 0;
+
+    for (const line of lines) {
+        let aiCount = 0;
+        let humanCount = 0;
+
+        for (const idx of line) {
+            if (board[idx] === ai) aiCount++;
+            else if (board[idx] === human) humanCount++;
+        }
+
+        score += evaluateLine(aiCount, humanCount);
+    }
+
+    return score;
+}
+
+function evaluateBoard2D(board, size, ai, human, streakToWin) {
+    let score = 0;
+
+    const directions = [
+        [0, 1], [1, 0], [1, 1], [1, -1]
+    ];
+
+    for (let r = 0; r < size; r++) {
+        for (let c = 0; c < size; c++) {
+            for (const [dr, dc] of directions) {
+                let aiCount = 0;
+                let humanCount = 0;
+                let valid = true;
+
+                for (let k = 0; k < streakToWin; k++) {
+                    let nr = r + dr * k;
+                    let nc = c + dc * k;
+
+                    if (nr < 0 || nr >= size || nc < 0 || nc >= size) {
+                        valid = false;
+                        break;
+                    }
+
+                    if (board[nr][nc] === ai) aiCount++;
+                    else if (board[nr][nc] === human) humanCount++;
+                }
+
+                if (valid) {
+                    score += evaluateLine(aiCount, humanCount);
+                }
+            }
+        }
+    }
+
+    return score;
+}
+
+function evaluateLine(aiCount, humanCount) {
+    if (aiCount > 0 && humanCount === 0) {
+        return Math.pow(10, aiCount); // prioritize offensive streaks
+    } else if (humanCount > 0 && aiCount === 0) {
+        return Math.pow(10, humanCount - 1); // prioritize blocking
+    }
+    return 0;
+}

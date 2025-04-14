@@ -93,6 +93,8 @@ function aiMove() {
         aiMove = getGreedyMove(inputBoard, boardSize);
     } else if (selectedAI === 'random') {
         aiMove = getRandomMove(inputBoard, boardSize);
+    } else if (selectedAI === 'heuristic') {
+        aiMove = getHeuristicMove(inputBoard, boardSize);
     }
 
     if (aiMove !== null) {
@@ -156,7 +158,10 @@ function updateAlgorithmDescription() {
         desc.textContent = "Greedy strategy chooses the best-looking move immediately without future prediction. Fast but short-sighted.";
     } else if (aiType === 'random') {
         desc.textContent = "Blindly make a move.";
+    } else if (aiType === 'Heuristic'){
+        desc.textContent = "Expert - Scores each move based on potential to win or block. Strategic and fast.";
     }
+    
 }
 
 function updateCurrentAI() {
@@ -167,6 +172,8 @@ function updateCurrentAI() {
         aiDisplay.textContent = "AI Mode: Greedy (Immediate Choice)";
     } else if (aiType === 'random') {
         aiDisplay.textContent = "AI Mode: Random (God knows where it will make the next move)";
+    } else if (aiType === 'heuristic') {
+        aiDisplay.textContent = "AI Mode: Expert (Heuristic Evaluation)";
     }
 }
 
