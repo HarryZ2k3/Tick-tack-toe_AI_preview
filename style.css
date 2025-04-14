@@ -92,3 +92,47 @@ select, button {
     box-shadow: 0 0 8px 3px rgba(0, 128, 255, 0.7);
     transition: box-shadow 0.2s ease;
 }
+/* Stat card*/
+#game-stats p {
+    margin: 4px 0;
+}
+#game-stats button {
+    margin-top: 6px;
+    padding: 4px 10px;
+}
+#turn-counter,
+#game-stats {
+    display: none;
+}
+
+/* Game area flex box*/
+#game-area {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+#board-and-status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.side-info {
+    min-width: 150px;
+    font-weight: bold;
+    font-size: 16px;
+    text-align: center;
+}
+
+#game-stats p {
+    margin: 4px 0;
+}
+
+#game-stats button {
+    margin-top: 6px;
+    padding: 4px 10px;
+}

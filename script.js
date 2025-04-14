@@ -2,7 +2,14 @@ let boardSize = 3;
 let board = [];
 let currentPlayer = 'X';
 let gameOver = false;
+let turnCount = 0;
 let lastMove = null;
+
+let stats = {
+    x: 0,
+    o: 0,
+    draws: 0
+};
 
 const boardContainer = document.getElementById('board');
 const statusDisplay = document.getElementById('status');
@@ -15,15 +22,23 @@ function startGame() {
     boardContainer.style.display = 'grid';
     resetGame();
     updateCurrentAI();
+    updateAlgorithmDescription();
 }
 
 function resetGame() {
+    turnCount = 0;
     board = Array.from({ length: boardSize }, () => Array(boardSize).fill(''));
     currentPlayer = 'X';
     gameOver = false;
+    lastMove = null;
+
     renderBoard();
     setStatus(`Player ${currentPlayer}'s turn`);
-    updateCurrentAI();
+    updateTurnCounter();
+
+    // Show stat/turn sections if hidden
+    document.getElementById('turn-counter').style.display = 'block';
+    document.getElementById('game-stats').style.display = 'block';
 }
 
 function renderBoard() {
@@ -48,7 +63,6 @@ function renderBoard() {
     }
 }
 
-
 function handleCellClick(e) {
     if (gameOver || currentPlayer !== 'X') return;
 
@@ -62,19 +76,24 @@ function handleCellClick(e) {
 
 function handleMove(row, col) {
     if (gameOver || board[row][col] !== '') return;
-    lastMove = { row, col };
+
     board[row][col] = currentPlayer;
+    lastMove = { row, col };
+    turnCount++;
+    updateTurnCounter();
     renderBoard();
 
     if (checkWinCondition(row, col)) {
         setStatus(`Player ${currentPlayer} wins!`);
         gameOver = true;
+        updateStats(currentPlayer);
         return;
     }
 
     if (isDraw()) {
         setStatus("It's a draw!");
         gameOver = true;
+        updateStats('draw');
         return;
     }
 
@@ -105,10 +124,6 @@ function aiMove() {
         const row = boardSize === 3 ? Math.floor(aiMove / 3) : aiMove.row;
         const col = boardSize === 3 ? aiMove % 3 : aiMove.col;
         handleMove(row, col);
-    }
-    if (aiMove === null) {
-        console.log('[Greedy AI] No available moves.');
-        return;
     }
 }
 
@@ -152,32 +167,50 @@ function setStatus(message) {
     statusDisplay.textContent = message;
 }
 
+function updateTurnCounter() {
+    document.getElementById('turn-counter').textContent = `Turn: ${turnCount}`;
+}
+
+function updateStats(winner) {
+    if (winner === 'X') stats.x++;
+    else if (winner === 'O') stats.o++;
+    else if (winner === 'draw') stats.draws++;
+
+    document.getElementById('stat-x').textContent = `X Wins: ${stats.x}`;
+    document.getElementById('stat-o').textContent = `O Wins: ${stats.o}`;
+    document.getElementById('stat-draws').textContent = `Draws: ${stats.draws}`;
+}
+
+function resetStats() {
+    stats = { x: 0, o: 0, draws: 0 };
+    updateStats('');
+}
+
 function updateAlgorithmDescription() {
     const aiType = aiSelector.value;
     const desc = document.getElementById('ai-description');
 
-    if (aiType === 'minimax') {
-        desc.textContent = "Minimax explores all possible moves and outcomes recursively to choose the best path. Strong but slower.";
+    if (aiType === 'random') {
+        desc.textContent = "Easy - Randomly selects a move. Completely unpredictable.";
     } else if (aiType === 'greedy') {
-        desc.textContent = "Greedy strategy chooses the best-looking move immediately without future prediction. Fast but short-sighted.";
-    } else if (aiType === 'random') {
-        desc.textContent = "Blindly make a move.";
-    } else if (aiType === 'Heuristic'){
-        desc.textContent = "Expert - Scores each move based on potential to win or block. Strategic and fast.";
+        desc.textContent = "Hard - Picks the best immediate move without deep prediction.";
+    } else if (aiType === 'minimax') {
+        desc.textContent = "Easy - Minimax explores all possibilities recursively. Strong but slower.";
+    } else if (aiType === 'heuristic') {
+        desc.textContent = "Expert - Strategically scores each move. Efficient and tough.";
     }
-    
 }
 
 function updateCurrentAI() {
     const aiType = aiSelector.value;
     if (aiType === 'minimax') {
-        aiDisplay.textContent = "AI Mode: Minimax (Recursive Strategy)";
+        aiDisplay.textContent = "AI Mode: Easy (Minimax)";
     } else if (aiType === 'greedy') {
-        aiDisplay.textContent = "AI Mode: Greedy (Immediate Choice)";
+        aiDisplay.textContent = "AI Mode: Hard (Greedy)";
     } else if (aiType === 'random') {
-        aiDisplay.textContent = "AI Mode: Random (God knows where it will make the next move)";
+        aiDisplay.textContent = "AI Mode: Easy (Random)";
     } else if (aiType === 'heuristic') {
-        aiDisplay.textContent = "AI Mode: Expert (Heuristic Evaluation)";
+        aiDisplay.textContent = "AI Mode: Expert (Heuristic)";
     }
 }
 

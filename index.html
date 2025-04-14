@@ -32,9 +32,23 @@
     <p id="ai-description" style="margin-top: 10px; font-style: italic;"></p>
   </div>
 
-  <div id="board"></div>
-  <div id="status"></div>
-  <div id="current-ai"></div>
+  <!-- Game layout with side panels -->
+  <div id="game-area">
+    <div id="turn-counter" class="side-info"></div>
+
+    <div id="board-and-status">
+      <div id="board"></div>
+      <div id="status"></div>
+      <div id="current-ai"></div>
+    </div>
+
+    <div id="game-stats" class="side-info">
+      <p id="stat-x">X Wins: 0</p>
+      <p id="stat-o">O Wins: 0</p>
+      <p id="stat-draws">Draws: 0</p>
+      <button onclick="resetStats()">Reset Stats</button>
+    </div>
+  </div>
 
   <script src="ai.js"></script>
   <script src="script.js"></script>
