@@ -129,6 +129,8 @@ function aiMove() {
         aiMove = getRandomMove(inputBoard, boardSize);
     } else if (selectedAI === 'heuristic') {
         aiMove = getHeuristicMove(inputBoard, boardSize);
+    } else if (selectedAI === 'experimental') {
+        aiMove = getExperimentalMove(inputBoard, boardSize, 'O', lastMove);
     }
 
     if (aiMove !== null) {
@@ -210,7 +212,11 @@ function updateAlgorithmDescription() {
         desc.textContent = "Easy - Minimax explores all possibilities recursively. Strong but slower.";
     } else if (aiType === 'heuristic') {
         desc.textContent = "Expert - Strategically scores each move. Efficient and tough.";
+    } else if (aiType === 'experimental') {
+        desc.textContent = "Try and beat this";
+        aiDisplay.textContent = "AI Mode: Experimental";
     }
+    
 }
 
 function updateCurrentAI() {
