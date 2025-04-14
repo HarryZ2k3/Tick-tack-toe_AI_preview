@@ -408,7 +408,7 @@ function evaluateBoard1D(board, ai, human) {
             else if (board[idx] === human) humanCount++;
         }
 
-        score += evaluateLine(aiCount, humanCount);
+        score += evaluateLine(aiCount, humanCount,3);
     }
 
     return score;
@@ -442,7 +442,7 @@ function evaluateBoard2D(board, size, ai, human, streakToWin) {
                 }
 
                 if (valid) {
-                    score += evaluateLine(aiCount, humanCount);
+                    score += evaluateLine(aiCount, humanCount,winStreak);
                 }
             }
         }
@@ -451,11 +451,17 @@ function evaluateBoard2D(board, size, ai, human, streakToWin) {
     return score;
 }
 
-function evaluateLine(aiCount, humanCount) {
+function evaluateLine(aiCount, humanCount, streakToWin = 3) {
     if (aiCount > 0 && humanCount === 0) {
-        return Math.pow(10, aiCount); // prioritize offensive streaks
+        // AI-only line
+        if (aiCount === streakToWin - 1) return 10000; // almost win
+        if (aiCount === streakToWin - 2) return 1000;
+        return Math.pow(10, aiCount);
     } else if (humanCount > 0 && aiCount === 0) {
-        return Math.pow(10, humanCount - 1); // prioritize blocking
+        // Player-only line (threat)
+        if (humanCount === streakToWin - 1) return 100000; // must block!
+        if (humanCount === streakToWin - 2) return 5000;
+        return Math.pow(10, humanCount - 1);
     }
-    return 0;
+    return 0; // mixed lines are not useful
 }
