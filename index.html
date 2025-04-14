@@ -3,6 +3,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto&display=swap" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Tic-tac-toe challenge</title>
   <link rel="stylesheet" href="style.css" />
@@ -28,7 +29,10 @@
 
     <button onclick="startGame()">Start Game</button>
     <button onclick="resetGame()">Reset Board</button>
-
+    <label>
+      <input type="checkbox" id="pvp-toggle" onchange="updatePvPMode()">
+      Player vs Player Mode
+    </label>
     <p id="ai-description" style="margin-top: 10px; font-style: italic;"></p>
   </div>
 

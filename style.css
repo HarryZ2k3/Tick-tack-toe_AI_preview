@@ -1,111 +1,44 @@
-/* General layout */
 body {
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
-    background: #f7f7f7;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
+    font-family: 'Roboto', sans-serif;
+    background: #121212;
+    color: #f5f5f5;
     text-align: center;
 }
 
-/* Controls */
+/* Title */
+h1 {
+    font-family: 'Garamond', cursive;
+    font-size: 50px;
+    color: #00ffff;
+    text-shadow: 0 0 5px #00ffff;
+    margin-bottom: 20px;
+}
+
+/* Control panel */
 #controls {
-    margin: 20px 0;
+    margin-bottom: 20px;
 }
 
-select, button {
-    padding: 10px;
-    font-size: 16px;
-    margin-right: 10px;
+#controls select,
+#controls button {
+    font-family: 'Roboto', sans-serif;
+    background: #222;
+    color: #f5f5f5;
+    border: 1px solid #555;
     border-radius: 5px;
-    border: 1px solid #ccc;
+    padding: 8px 12px;
+    margin: 4px;
+}
+
+#controls button:hover {
+    background-color: #444;
     cursor: pointer;
+    box-shadow: 0 0 6px #00ffff;
 }
 
-#status {
-    margin-top: 20px;
-    font-size: 18px;
-    font-weight: bold;
-}
-
-/* Board layout */
-#board {
-    display: none; /* Hidden until Start Game is clicked */
-    gap: 4px;
-    margin-top: 20px;
-    justify-content: center;
-}
-
-/* Cells */
-.cell {
-    background-color: #ffffff;
-    border: 2px solid #ddd;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: clamp(20px, 5vw, 48px);
-    font-weight: bold;
-    cursor: pointer;
-    width: clamp(40px, 10vw, 80px);
-    height: clamp(40px, 10vw, 80px);
-    transition: background 0.3s ease, transform 0.2s ease;
-}
-
-.cell:hover {
-    background-color: #f0f0f0;
-}
-
-.cell.played {
-    animation: pop 0.2s ease-out;
-}
-
-@keyframes pop {
-    0% { transform: scale(0.8); opacity: 0.6; }
-    100% { transform: scale(1); opacity: 1; }
-}
-
-/* Dynamic columns */
-#board[data-size="3"] {
-    grid-template-columns: repeat(3, 1fr);
-}
-
-#board[data-size="6"] {
-    grid-template-columns: repeat(6, 1fr);
-}
-
-#board[data-size="9"] {
-    grid-template-columns: repeat(9, 1fr);
-}
-
-#current-ai {
-    font-size: 16px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 10px;
-}
-/* Highlight last move made by opponent */
-.cell.last-move {
-    box-shadow: 0 0 8px 3px rgba(0, 128, 255, 0.7);
-    transition: box-shadow 0.2s ease;
-}
-/* Stat card*/
-#game-stats p {
-    margin: 4px 0;
-}
-#game-stats button {
-    margin-top: 6px;
-    padding: 4px 10px;
-}
-#turn-counter,
-#game-stats {
-    display: none;
-}
-
-/* Game area flex box*/
+/* Game layout container */
 #game-area {
     display: flex;
     align-items: flex-start;
@@ -115,12 +48,82 @@ select, button {
     flex-wrap: wrap;
 }
 
+/* Main board and text under it */
 #board-and-status {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
+/* Game board itself */
+#board {
+    display: grid;
+    gap: 4px;
+    margin: 10px 0;
+}
+
+#board[data-size="3"] {
+    grid-template-columns: repeat(3, 60px);
+}
+
+#board[data-size="6"] {
+    grid-template-columns: repeat(6, 60px);
+}
+
+#board[data-size="9"] {
+    grid-template-columns: repeat(9, 60px);
+}
+
+/* Each cell on the board */
+.cell {
+    background-color: #1e1e1e;
+    border: 2px solid #333;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    font-weight: bold;
+    transition: background 0.2s ease, transform 0.1s ease;
+    user-select: none;
+}
+
+.cell:hover {
+    background-color: #2a2a2a;
+}
+
+.cell.X {
+    color: #00aaff;
+}
+
+.cell.O {
+    color: #ff5555;
+}
+
+.cell.last-move.X {
+    box-shadow: 0 0 10px 2px #00aaff;
+}
+
+.cell.last-move.O {
+    box-shadow: 0 0 10px 2px #ff5555;
+}
+
+/* Status / current player */
+#status {
+    font-size: 1.2rem;
+    margin-top: 10px;
+}
+
+#status.X {
+    color: #00aaff;
+}
+
+#status.O {
+    color: #ff5555;
+}
+
+/* Turn & stat side panels */
 .side-info {
     min-width: 150px;
     font-weight: bold;
@@ -128,6 +131,12 @@ select, button {
     text-align: center;
 }
 
+#turn-counter,
+#game-stats {
+    display: none; /* Hidden until game starts */
+}
+
+/* Stats panel details */
 #game-stats p {
     margin: 4px 0;
 }
@@ -135,4 +144,13 @@ select, button {
 #game-stats button {
     margin-top: 6px;
     padding: 4px 10px;
+    background: #333;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#game-stats button:hover {
+    background-color: #555;
 }

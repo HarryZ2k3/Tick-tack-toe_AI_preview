@@ -4,6 +4,8 @@ let currentPlayer = 'X';
 let gameOver = false;
 let turnCount = 0;
 let lastMove = null;
+let isPvP = false;
+const pvpToggle = document.getElementById('pvp-toggle');
 
 let stats = {
     x: 0,
@@ -23,6 +25,12 @@ function startGame() {
     resetGame();
     updateCurrentAI();
     updateAlgorithmDescription();
+}
+
+function updatePvPMode() {
+    isPvP = pvpToggle.checked;
+    aiSelector.disabled = isPvP;
+    updateCurrentAI(); // updates label to show PvP if active
 }
 
 function resetGame() {
@@ -52,9 +60,11 @@ function renderBoard() {
             cell.dataset.row = row;
             cell.dataset.col = col;
             cell.textContent = board[row][col];
-
+            if (board[row][col]) {
+                cell.classList.add(board[row][col]);
+            }
             if (row === lastMove?.row && col === lastMove?.col) {
-                cell.classList.add('last-move');
+                cell.classList.add('last-move', board[row][col]);
             }
 
             cell.addEventListener('click', handleCellClick);
@@ -64,7 +74,8 @@ function renderBoard() {
 }
 
 function handleCellClick(e) {
-    if (gameOver || currentPlayer !== 'X') return;
+    if (gameOver) return;
+    if (!isPvP && currentPlayer !== 'X') return;
 
     const row = parseInt(e.target.dataset.row);
     const col = parseInt(e.target.dataset.col);
@@ -82,7 +93,7 @@ function handleMove(row, col) {
     turnCount++;
     updateTurnCounter();
     renderBoard();
-
+    
     if (checkWinCondition(row, col)) {
         setStatus(`Player ${currentPlayer} wins!`);
         gameOver = true;
@@ -100,7 +111,7 @@ function handleMove(row, col) {
     currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
     setStatus(`Player ${currentPlayer}'s turn`);
 
-    if (!gameOver && currentPlayer === 'O') {
+    if (!gameOver && currentPlayer === 'O' && !isPvP) {
         setTimeout(() => aiMove(), 200);
     }
 }
@@ -165,6 +176,7 @@ function checkWinCondition(row, col) {
 
 function setStatus(message) {
     statusDisplay.textContent = message;
+    statusDisplay.className = currentPlayer; // Apply "X" or "O" class
 }
 
 function updateTurnCounter() {
@@ -202,6 +214,10 @@ function updateAlgorithmDescription() {
 }
 
 function updateCurrentAI() {
+    if (isPvP) {
+        aiDisplay.textContent = "Mode: Player vs Player";
+        return;
+    }
     const aiType = aiSelector.value;
     if (aiType === 'minimax') {
         aiDisplay.textContent = "AI Mode: Easy (Minimax)";
