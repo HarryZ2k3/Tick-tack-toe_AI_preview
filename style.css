@@ -87,3 +87,8 @@ select, button {
     color: #333;
     margin-bottom: 10px;
 }
+/* Highlight last move made by opponent */
+.cell.last-move {
+    box-shadow: 0 0 8px 3px rgba(0, 128, 255, 0.7);
+    transition: box-shadow 0.2s ease;
+}

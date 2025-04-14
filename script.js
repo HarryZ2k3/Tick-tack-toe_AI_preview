@@ -2,6 +2,7 @@ let boardSize = 3;
 let board = [];
 let currentPlayer = 'X';
 let gameOver = false;
+let lastMove = null;
 
 const boardContainer = document.getElementById('board');
 const statusDisplay = document.getElementById('status');
@@ -36,14 +37,17 @@ function renderBoard() {
             cell.dataset.row = row;
             cell.dataset.col = col;
             cell.textContent = board[row][col];
-            if (board[row][col] === '') {
-                cell.classList.add('played');
+
+            if (row === lastMove?.row && col === lastMove?.col) {
+                cell.classList.add('last-move');
             }
+
             cell.addEventListener('click', handleCellClick);
             boardContainer.appendChild(cell);
         }
     }
 }
+
 
 function handleCellClick(e) {
     if (gameOver || currentPlayer !== 'X') return;
@@ -58,7 +62,7 @@ function handleCellClick(e) {
 
 function handleMove(row, col) {
     if (gameOver || board[row][col] !== '') return;
-
+    lastMove = { row, col };
     board[row][col] = currentPlayer;
     renderBoard();
 
