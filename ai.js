@@ -20,6 +20,17 @@ function getBestMove(board) {
     return move;
 }
 
+function getNearestMove(moves, reference) {
+    if (!reference || moves.length === 0) return moves[Math.floor(Math.random() * moves.length)];
+
+    moves.sort((a, b) => {
+        const da = Math.abs(a.row - reference.row) + Math.abs(a.col - reference.col);
+        const db = Math.abs(b.row - reference.row) + Math.abs(b.col - reference.col);
+        return da - db;
+    });
+
+    return moves[0];
+}
 function minimax(board, depth, isMaximizing) {
     const winner = checkWinner(board);
     if (winner !== null) {
@@ -320,15 +331,45 @@ function evaluateBoard2D(board, size, ai, human, streakToWin) {
 function evaluateLine(aiCount, humanCount, streakToWin = 4) {
     if (aiCount > 0 && humanCount === 0) {
         if (aiCount === streakToWin - 1) return 10000;
-        if (aiCount === streakToWin - 2) return 500;
-        return Math.pow(10, aiCount);
+        if (aiCount === streakToWin - 2) return 1000;
+        if (aiCount === 2) return 500;
+        return Math.pow(5, aiCount);
     } else if (humanCount > 0 && aiCount === 0) {
         if (humanCount === streakToWin - 1) return 100000;
-        if (humanCount === streakToWin - 2) return 1000;
-        if (humanCount === 1) return 50;
-        return Math.pow(10, humanCount);
+        if (humanCount === streakToWin - 2) return 5000;
+        if (humanCount === 2) return 1500; // added for better blocking
+        return Math.pow(6, humanCount);
     }
     return 0;
+}
+
+function evaluateThreatAt(board, size, row, col, player, winStreak) {
+    const directions = [
+        [0, 1], [1, 0], [1, 1], [1, -1]
+    ];
+    let maxChain = 0;
+
+    for (const [dr, dc] of directions) {
+        let count = 1; // the cell we hypothetically place in
+        for (let d = 1; d < winStreak; d++) {
+            const r = row + dr * d;
+            const c = col + dc * d;
+            if (r >= 0 && r < size && c >= 0 && c < size && board[r][c] === player) {
+                count++;
+            } else break;
+        }
+        for (let d = 1; d < winStreak; d++) {
+            const r = row - dr * d;
+            const c = col - dc * d;
+            if (r >= 0 && r < size && c >= 0 && c < size && board[r][c] === player) {
+                count++;
+            } else break;
+        }
+
+        if (count > maxChain) maxChain = count;
+    }
+
+    return maxChain; // 2 means early chain, 3+ is dangerous
 }
 
 // Experimental AI function
@@ -336,16 +377,19 @@ function getExperimentalMove(board, size, aiSymbol = 'O', lastHumanMove = null) 
     const humanSymbol = aiSymbol === 'O' ? 'X' : 'O';
     const winStreak = size === 6 ? 4 : size === 9 ? 5 : 3;
 
-    // 1. BLOCK imminent threats
     let blockMoves = [];
+    let doubleThreats = [];
+
+    // 1. Detect serious human threats (win next move or 2 in a row)
     for (let row = 0; row < size; row++) {
         for (let col = 0; col < size; col++) {
-            if (board[row][col] === '') {
-                board[row][col] = humanSymbol;
-                if (checkWinConditionCustom(board, row, col, winStreak)) {
-                    blockMoves.push({ row, col });
-                }
-                board[row][col] = '';
+            if (board[row][col] !== '') continue;
+
+            let threatLevel = evaluateThreatAt(board, size, row, col, humanSymbol, winStreak);
+            if (threatLevel >= winStreak - 1) {
+                blockMoves.push({ row, col });
+            } else if (threatLevel === 2) {
+                doubleThreats.push({ row, col });
             }
         }
     }
@@ -354,7 +398,11 @@ function getExperimentalMove(board, size, aiSymbol = 'O', lastHumanMove = null) 
         return getNearestMove(blockMoves, lastHumanMove);
     }
 
-    // 2. Check attack opportunities
+    if (doubleThreats.length > 0) {
+        return getNearestMove(doubleThreats, lastHumanMove);
+    }
+
+    // 2. Look for own attack opportunities
     let attackMoves = [];
     for (let row = 0; row < size; row++) {
         for (let col = 0; col < size; col++) {
@@ -372,7 +420,7 @@ function getExperimentalMove(board, size, aiSymbol = 'O', lastHumanMove = null) 
         return getNearestMove(attackMoves, lastHumanMove);
     }
 
-    // 3. Fallback: pick defensive-looking move near human
+    // 3. Fallback: play near player to stay close
     let safeMoves = [];
     for (let row = 0; row < size; row++) {
         for (let col = 0; col < size; col++) {
@@ -384,17 +432,4 @@ function getExperimentalMove(board, size, aiSymbol = 'O', lastHumanMove = null) 
 
     return getNearestMove(safeMoves, lastHumanMove);
 }
-
-function getNearestMove(moves, reference) {
-    if (!reference) return moves[Math.floor(Math.random() * moves.length)];
-
-    moves.sort((a, b) => {
-        const da = Math.abs(a.row - reference.row) + Math.abs(a.col - reference.col);
-        const db = Math.abs(b.row - reference.row) + Math.abs(b.col - reference.col);
-        return da - db;
-    });
-
-    return moves[0]; // closest
-}
-
 
