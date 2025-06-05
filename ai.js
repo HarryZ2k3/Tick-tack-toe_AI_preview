@@ -31,6 +31,7 @@ function getNearestMove(moves, reference) {
 
     return moves[0];
 }
+// Minimax algorithm for AI decision making
 function minimax(board, depth, isMaximizing) {
     const winner = checkWinner(board);
     if (winner !== null) {
@@ -83,7 +84,7 @@ function checkWinner(board) {
 
     return board.includes('') ? null : 'draw';
 }
-
+//GREEDY AI FUNCTION
 function getGreedyMove(board, size, aiSymbol = 'O') {
     const humanSymbol = aiSymbol === 'O' ? 'X' : 'O';
     const winStreak = size === 6 ? 4 : size === 9 ? 5 : 3;
@@ -158,7 +159,7 @@ function findBestStreakMove(board, size, symbol, winStreak) {
 
     return null;
 }
-
+//RANDOM AI FUNCTION
 function getRandomMove(board, size) {
     if (!Array.isArray(board[0])) {
         const empty = [];
@@ -179,6 +180,7 @@ function getRandomMove(board, size) {
     return empty[Math.floor(Math.random() * empty.length)];
 }
 
+// Heuristic AI function
 function getHeuristicMove(board, size, aiSymbol = 'O') {
     const humanSymbol = aiSymbol === 'O' ? 'X' : 'O';
     const winStreak = size === 6 ? 4 : size === 9 ? 5 : 3;
